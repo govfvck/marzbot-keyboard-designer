@@ -114,7 +114,8 @@ select {
 
 #button-action-input,
 #button-ref-input,
-#text-input {
+#text-input,
+#ref-input {
   margin-top: 5px;
   width: 360px;
   padding: 10px;
@@ -122,6 +123,14 @@ select {
   border: 1px solid #ddd;
   font-size: 16px;
   margin-bottom: 10px;
+}
+
+textarea {
+  width: 360px;
+  max-width: 360px;
+  min-width: 360px;
+  min-height: 25px;
+  max-height: 180px;
 }
 
 #button-action-input {
@@ -165,25 +174,16 @@ select {
   background-color: rgba(255, 255, 255, 0.2);
 }
 
-#fixed-buttons {
-  margin-top: 20px;
-  display: flex;
-  justify-content: space-around;
-  width: 100%;
-}
-
 #download-button {
-  flex: 1;
-  margin: 0 5px;
+  margin-top: 10px;
   background-color: #4CAF50;
   color: white;
   border: none;
-  padding: 0 auto;
+  padding: 10px;
   cursor: pointer;
   border-radius: 6px;
   font-size: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  transition: background-color 0.3s;
+  width: 100%;
 }
 
 #download-button:hover {

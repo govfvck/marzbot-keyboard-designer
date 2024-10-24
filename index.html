@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>دکمه‌های شیشه‌ای داینامیک با خروجی JSON</title>
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 </head>
 <body>
 
@@ -16,42 +17,40 @@
         <option value="regular">معمولی</option>
       </select>
       <label for="ref-input">رجوع:</label>
-      <select id="ref-input">
-        <option value="main_menu">main_menu</option>
-        <option value="connect_help">connect_help</option>
-        <option value="connect_android">connect_android</option>
-        <option value="connect_ios">connect_ios</option>
-      </select>
-      <label for="text-input">متن کیبورد:</label>
-      <input type="text" id="text-input" placeholder="به منوی اصلی ربات خوش اومدید">
+      <input type="text" id="ref-input" placeholder="نام دکمه را وارد کنید" maxlength="30" value="main_menu" onkeydown="checkEnter(event)" oninput="validateInput(this, 'errorMsg')" disabled>
+      <p id="errorMsg" style="color: red; display: none;">کاراکترهای نامعتبر شناسایی شدند!</p>
+      <label for="text-input">تکست:</label>
+      <textarea id="text-input" placeholder="به منوی اصلی ربات خوش اومدید"></textarea>
       <div class="dashed-line"></div>
       <label for="button-name-input">نام دکمه:</label>
       <div class="input-container plus-icon">
         <button id="add-button">+</button>
-        <input type="text" id="button-name-input" placeholder="نام دکمه را وارد کنید">
-    </div>
+        <input type="text" id="button-name-input" placeholder="نام دکمه را وارد کنید" onkeydown="checkEnter(event)">
+      </div>
+
       <input type="text" id="button-action-input" placeholder="مقدار action را وارد کنید">
     </div>
 
     <div id="buttons-container"></div>
-    <div id="fixed-buttons">
-      <button id="download-button">
-        <box-icon name='download' color='#ffffff' ></box-icon>
-      </button>
-      <button id="add-form-button">افزودن فرم جدید</button>
-    </div>
 
+    <button id="add-form-button">افزودن فرم جدید</button>
+    
     <div id="form-list-container">
       <h3>لیست کیبورد ها</h3>
       <ul id="form-list"></ul>
     </div>
+
+    <button id="download-button">
+      <i class="fa fa-download" style="color: #ffffff;"></i>
+      دانلود خروجی
+    </button>
   </div>
 
-  <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="https://code.jquery.com/ui/1.14.0/jquery-ui.min.js"></script>
   <script>
+
     let maxButtonsPerRow = 3;
     let maxRows = 5;
     let currentButtonCount = 0;
@@ -67,13 +66,13 @@
       const buttonNameInput = document.getElementById('button-name-input').value.trim();
       const buttonActionInput = document.getElementById('button-action-input').value.trim() || "action";
 
-      console.log("test")
+      //console.log("test")
       if (isEditing && selectedButton) {
         selectedButton = null;
         isEditing = false;
         document.getElementById('button-name-input').value = '';
         document.getElementById('button-action-input').value = '';
-        console.log("Edit")
+        //console.log("Edit")
         return;
       }
       if (!buttonNameInput) {
@@ -107,10 +106,10 @@
       newButton.classList.add('button', 'glass-button');
       const title = document.createElement('div');
       title.classList.add('title');
-      console.log("buttonNameInput:",buttonNameInput)
+      //console.log("buttonNameInput:",buttonNameInput)
       title.innerHTML = buttonNameInput;
       newButton.dataset.action = buttonActionInput;
-      // اضافه کردن آیکون حذف
+      
       const deleteIcon = document.createElement('span');
       deleteIcon.classList.add('delete-icon');
       deleteIcon.innerHTML = '&times;';
@@ -128,14 +127,13 @@
       newButton.addEventListener('click', function() {
         selectedButton = newButton;
         //console.log(selectedButton);
-        console.log("selectedButton:",selectedButton)
+        //console.log("selectedButton:",selectedButton)
         editNameAction(this);
         isEditing = true;
       });
 
-        // اضافه کردن event listener برای حذف دکمه
       deleteIcon.addEventListener('click', function(event) {
-        event.stopPropagation(); // جلوگیری از اجرا شدن رویداد کلیک بر روی دکمه
+        event.stopPropagation();
         removeButton(newButton);
       });
 
@@ -145,13 +143,13 @@
     }
 
     function editNameAction(button) {
-      console.log("editNameAction:",button);
+      //console.log("editNameAction:",button);
       const buttonName = button.querySelector('.title');
-      console.log("buttonName:",buttonName);
+      //console.log("buttonName:",buttonName);
       const buttonAction = button.getAttribute('data-action');
-      const buttonRef = button.getAttribute('data-ref') || ''; // اگر ref وجود نداشته باشد مقدار پیش‌فرض '' است.
+      const buttonRef = button.getAttribute('data-ref') || '';
 
-      console.log("buttonRef:",buttonRef);
+      //console.log("buttonRef:",buttonRef);
   
       Swal.fire({
           title: 'ویرایش',
@@ -181,7 +179,7 @@
           preConfirm: () => {
               const newName = document.getElementById('swal-input1').value;
               const newAction = document.getElementById('swal-input2').value;
-              const newRef = newAction === 'keyboard' ? document.getElementById('swal-input3').value : ''; // فقط اگر action برابر keyboard باشد، ref ثبت شود.
+              const newRef = newAction === 'keyboard' ? document.getElementById('swal-input3').value : '';
 
               if (!newName || !newAction) {
                   Swal.showValidationMessage('هر دو فیلد الزامی است!');
@@ -191,7 +189,7 @@
               return {
                   name: newName,
                   action: newAction,
-                  ref: newAction === 'keyboard' && newRef ? newRef : null // اگر action برابر keyboard باشد و ref مقدار داشته باشد، ref ذخیره شود
+                  ref: newAction === 'keyboard' && newRef ? newRef : null
               };
           }
       }).then((result) => {
@@ -200,7 +198,7 @@
   
               button.querySelector('.title').textContent = name;
               button.setAttribute('data-action', action);
-              button.setAttribute('data-ref', ref); // اضافه کردن ref به دکمه
+              button.setAttribute('data-ref', ref);
               //console.log("button:",button);
               const row = button.closest('.buttons-row');
               //console.log("row:",row);
@@ -216,7 +214,7 @@
               
           }
       });
-        // بررسی اینکه آیا Action برابر keyboard است و نمایش فیلد انتخاب ref
+        
         document.getElementById('swal-input2').addEventListener('input', function () {
           if (this.value === 'keyboard') {
               document.getElementById('swal-ref-container').style.display = 'block';
@@ -226,29 +224,29 @@
           }
       });
 
-      // اگر Action از قبل برابر keyboard باشد فیلد ref را نمایش دهد
+      
       if (buttonAction === 'keyboard') {
           document.getElementById('swal-ref-container').style.display = 'block';
-          populateRefOptions(buttonRef); // تنظیم مقدار انتخاب‌شده فعلی برای ref
+          populateRefOptions(buttonRef);
       }
   }
   
   function populateRefOptions(selectedRef = '') {
     const selectElement = document.getElementById('swal-input3');
-    selectElement.innerHTML = ''; // ابتدا لیست را خالی می‌کنیم
+    selectElement.innerHTML = '';
   
-    // گرفتن همه‌ی refها از آرایه formData
+    
     formData.forEach(form => {
         const option = document.createElement('option');
         option.value = form.ref;
         option.textContent = form.ref;
         if (form.ref === selectedRef) {
-            option.selected = true; // اگر ref برابر بود انتخاب شود
+            option.selected = true;
         }
         selectElement.appendChild(option);
     });
   
-    // اگر هیچ ref در formData وجود نداشت، یک گزینه پیش‌فرض اضافه شود
+    
     if (formData.length === 0) {
         const defaultOption = document.createElement('option');
         defaultOption.value = '';
@@ -278,6 +276,7 @@
     }
 
     document.getElementById('add-form-button').addEventListener('click', function() {
+      document.getElementById('ref-input').disabled = false;
       if (selectedFormIndex !== null) {
         updateForm(selectedFormIndex);
       } else {
@@ -287,6 +286,7 @@
     });
 
     document.getElementById('download-button').addEventListener('click', function() {
+      document.getElementById('ref-input').disabled = false;
       if (selectedFormIndex !== null) {
         updateForm(selectedFormIndex);
       } else {
@@ -351,8 +351,12 @@
     }
 
     function deleteForm(index) {
-      formData.splice(index, 1); // حذف فرم از آرایه
-      renderFormList(); // بروزرسانی لیست فرم‌ها
+      if (index === 0) {
+        alert("اولین کیبورد قابل حذف نیست.");
+        return;
+      }
+      formData.splice(index, 1);
+      renderFormList();
       
     }
 
@@ -370,11 +374,10 @@
           newButton.classList.add('button', 'glass-button');
           const title = document.createElement('div');
           title.classList.add('title');
-          console.log("button.title:",button.title);
+          //console.log("button.title:",button.title);
           title.innerHTML = button.title;
           newButton.dataset.action = button.action;
 
-          // اضافه کردن آیکون حذف
           const deleteIcon = document.createElement('span');
           deleteIcon.classList.add('delete-icon');
           deleteIcon.innerHTML = '&times;';
@@ -387,14 +390,13 @@
 
           newButton.addEventListener('click', function() {
             selectedButton = newButton;
-            console.log("selectedButton2:",selectedButton)
+            //console.log("selectedButton2:",selectedButton)
             editNameAction(this);
             isEditing = true;
           });
     
-            // اضافه کردن event listener برای حذف دکمه
           deleteIcon.addEventListener('click', function(event) {
-            event.stopPropagation(); // جلوگیری از اجرا شدن رویداد کلیک بر روی دکمه
+            event.stopPropagation();
             removeButton(newButton);
           });
 
@@ -407,7 +409,7 @@
     function resetForm() {
       keyboard = [];
       buttonsContainer.innerHTML = '';
-      document.getElementById('type-input').value = '';
+      //document.getElementById('type-input').value = '';
       document.getElementById('ref-input').value = '';
       document.getElementById('text-input').value = '';
       currentButtonCount = 0;
@@ -420,7 +422,7 @@
 
       formData.forEach((form, index) => {
         const listItem = document.createElement('li');
-        listItem.innerHTML = `فرم ${index + 1}: ${form.text}`;
+        listItem.innerHTML = `فرم ${index + 1}: ${form.ref}`;
         const newRow = document.createElement('div');
         formList.appendChild(newRow);
         const editButton = document.createElement('button');
@@ -475,8 +477,40 @@
       });
     }
     
+    function checkDuplicateRef(inputValue) {
+
+      const isDuplicate = formData.some(item => item.ref === inputValue);
+      if (isDuplicate) {
+          alert("این مقدار ref قبلا وارد شده است.");
+          document.getElementById('ref-input').value = '';
+      }
+    }
+
+    document.getElementById('ref-input').addEventListener('input', function() {
+      checkDuplicateRef(this.value);
+    });
+
+    function validateInput(input, errorMsgId) {
+      const allowedChars = /^[A-Za-z0-9_]*$/;
+      const errorMsg = document.getElementById(errorMsgId);
+
+      if (allowedChars.test(input.value)) {
+          errorMsg.style.display = 'none';
+      } else {
+          errorMsg.style.display = 'block';
+          input.value = input.value.replace(/[^A-Za-z0-9_]/g, '');
+      }
+  }
+
+  function checkEnter(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault();
+        addNewButton()
+    }
+  }
 
     activateDragAndDrop();
+
   </script>
 
 </body>
