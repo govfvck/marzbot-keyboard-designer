@@ -229,16 +229,15 @@
       activateDragAndDrop();
     }
 
-    // ساخت فرم و اضافه کردن دکمه‌ها
     function displayForm(data) {
-      console.log("test")
-      // نمایش متن
+      //console.log("test")
+
       document.getElementById('type-input').value = data.main_menu.type;
       document.getElementById('ref-input').value = data.main_menu.ref;
       document.getElementById('text-input').value = data.main_menu.text;
 
       data.main_menu.keyboard.forEach(row => {
-        console.log("row",row)
+        //console.log("row",row)
         row.forEach(button => {
           addNewButtonn(button.title, button.action, button.ref);
   
@@ -443,7 +442,7 @@
           convertedData.keyboards[ref] = item;
         }
       });
-      console.log(convertedData)
+      //console.log(convertedData)
       const jsonOutput = JSON.stringify(convertedData, null, 2);
       const blob = new Blob([jsonOutput], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
@@ -458,7 +457,7 @@
       const typeInput = document.getElementById('type-input').value.trim();
       const refInput = document.getElementById('ref-input').value.trim();
       const textInput = document.getElementById('text-input').value.trim();
-      console.log("addCurrentFormToData",formData)
+      //console.log("addCurrentFormToData",formData)
       if (typeInput && refInput && textInput && keyboard.length > 0) {
         formData.push({
           type: typeInput,
@@ -476,7 +475,7 @@
       const typeInput = document.getElementById('type-input').value.trim();
       const refInput = document.getElementById('ref-input').value.trim();
       const textInput = document.getElementById('text-input').value.trim();
-      console.log("updateForm",formData[index])
+      //("updateForm",formData[index])
       if (typeInput && refInput && textInput && keyboard.length > 0) {
         formData[index] = {
           type: typeInput,
