@@ -18,7 +18,7 @@
         <option value="inline">شیشه‌ای</option>
         <option value="regular">معمولی</option>
       </select>
-      <label for="ref-input">رجوع:</label>
+      <label for="ref-input">نام کیبورد:</label>
       <input type="text" id="ref-input" placeholder="نامی منحصر به فرد برای این کیبورد انتخاب کنید:" maxlength="30"
         value="main_menu" onkeydown="checkEnter(event)" oninput="validateInput(this, 'errorMsg')" disabled>
       <p id="errorMsg" style="color: red; display: none;">کاراکترهای نامعتبر شناسایی شدند!</p>
@@ -55,7 +55,32 @@
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="https://code.jquery.com/ui/1.14.0/jquery-ui.min.js"></script>
   <script>
-
+  
+    const defualt = {
+      "main_menu": {
+        "type": "inline",
+        "ref": "main_menu",
+        "text": "♻️ منوی اصلی ربات:\n🤖 چه کاری میتونم براتون انجام بدم؟👇",
+        "keyboard": [
+          [
+            { "title": "🚀 خرید اشتراک", "action": "purchase", "ref": null }
+          ],
+          [
+            { "title": "📍 اشتراک‌های من", "action": "proxies", "ref": null },
+            { "title": "💎 حساب من", "action": "account", "ref": null },
+            { "title": "💰 شارژ حساب", "action": "charge", "ref": null }
+          ],
+          [
+            { "title": "👥 زیرمجموعه گیری", "action": "referral", "ref": null }
+          ],
+          [
+            { "title": "🗒 راهنما", "action": "ref_text", "ref": "help" },
+            { "title": "☑️ پشتیبانی", "action": "ref_text", "ref": "support" }
+          ]
+        ]
+      }
+    };
+  
     let maxButtonsPerRow = 3;
     let maxRows = 5;
     let currentButtonCount = 0;
@@ -66,10 +91,67 @@
     let selectedFormIndex = null;
 
     const buttonsContainer = document.getElementById('buttons-container');
+    function addNewButtonn(buttonNameInput, buttonActionInput, buttonRefInput) {
+      buttonActionInput = buttonActionInput || "text";
+  
+      const rows = buttonsContainer.querySelectorAll('.buttons-row');
+      let currentRow;
+      
+      if (!rows.length || rows[rows.length - 1].children.length >= maxButtonsPerRow) {
+          if (rows.length < maxRows) {
+              currentRow = document.createElement('div');
+              currentRow.classList.add('buttons-row');
+              buttonsContainer.appendChild(currentRow);
+              keyboard.push([]);
+          } else {
+              alert('حداکثر تعداد ردیف‌ها ساخته شده است.');
+              return;
+          }
+      } else {
+          currentRow = rows[rows.length - 1];
+      }
+  
+      const newButton = document.createElement('div');
+      newButton.classList.add('button', 'glass-button');
+      const title = document.createElement('div');
+      title.classList.add('title');
+      title.innerHTML = buttonNameInput;
+      newButton.dataset.action = buttonActionInput;
+  
+      const deleteIcon = document.createElement('span');
+      deleteIcon.classList.add('delete-icon');
+      deleteIcon.innerHTML = '&times;';
+  
+      newButton.appendChild(deleteIcon);
+      newButton.appendChild(title);
+      currentRow.appendChild(newButton);
+      currentButtonCount++;
 
+      keyboard[keyboard.length - 1].push({
+        title: buttonNameInput,
+        action: buttonActionInput,
+        ref : buttonRefInput
+      });
+
+      newButton.addEventListener('click', function () {
+          selectedButton = newButton;
+          editNameAction(this);
+          isEditing = true;
+      });
+  
+      deleteIcon.addEventListener('click', function (event) {
+          event.stopPropagation();
+          removeButton(newButton);
+      });
+
+      document.getElementById('button-name-input').value = '';
+      document.getElementById('button-action-input').value = '';
+      activateDragAndDrop();
+  }
+  
     function addNewButton() {
       const buttonNameInput = document.getElementById('button-name-input').value.trim();
-      const buttonActionInput = document.getElementById('button-action-input').value.trim() || "action";
+      const buttonActionInput = document.getElementById('button-action-input').value.trim() || "text";
 
       //console.log("test")
       if (isEditing && selectedButton) {
@@ -147,6 +229,26 @@
       activateDragAndDrop();
     }
 
+    // ساخت فرم و اضافه کردن دکمه‌ها
+    function displayForm(data) {
+      console.log("test")
+      // نمایش متن
+      document.getElementById('type-input').value = data.main_menu.type;
+      document.getElementById('ref-input').value = data.main_menu.ref;
+      document.getElementById('text-input').value = data.main_menu.text;
+
+      data.main_menu.keyboard.forEach(row => {
+        console.log("row",row)
+        row.forEach(button => {
+          addNewButtonn(button.title, button.action, button.ref);
+  
+        });
+      });
+    
+    }
+  
+    displayForm(defualt);
+
     function editNameAction(button) {
       //console.log("editNameAction:",button);
       const buttonName = button.querySelector('.title');
@@ -179,6 +281,14 @@
             <div id="swal-ref-container" style="display: none;  direction: rtl;">
                 <div style="text-align: right; padding-right: 30px;">انتخاب رجوع</div>
                 <select id="swal-input3" class="swal2-input"></select>
+            </div>
+            <div id="swal-text-container" style="display: none;  direction: rtl;">
+                <div style="text-align: right; padding-right: 30px;">متن پیام:</div>
+              <input id="swal-input3" class="swal2-input">
+            </div>
+            <div id="swal-ref-text-container" style="display: none;  direction: rtl;">
+                <div style="text-align: right; padding-right: 30px;">انتخاب متن رجوع</div>
+                <select id="swal-input4" class="swal2-input"></select>
             </div>`,
         focusConfirm: false,
         showCancelButton: true,
@@ -226,9 +336,21 @@
       document.getElementById('swal-input2').addEventListener('input', function () {
         if (this.value === 'keyboard') {
           document.getElementById('swal-ref-container').style.display = 'block';
+          document.getElementById('swal-text-container').style.display = 'none';
+          document.getElementById('swal-ref-text-container').style.display = 'none';
           populateRefOptions();
+        } else if (this.value === 'text'){
+          document.getElementById('swal-text-container').style.display = 'block';
+          document.getElementById('swal-ref-container').style.display = 'none';
+          document.getElementById('swal-ref-text-container').style.display = 'none';
+        } else if (this.value === 'ref_text'){
+          document.getElementById('swal-ref-text-container').style.display = 'block';
+          document.getElementById('swal-ref-container').style.display = 'none';
+          document.getElementById('swal-text-container').style.display = 'none';
         } else {
           document.getElementById('swal-ref-container').style.display = 'none';
+          document.getElementById('swal-text-container').style.display = 'none';
+          document.getElementById('swal-ref-text-container').style.display = 'none';
         }
       });
 
@@ -246,9 +368,9 @@
 
       formData.forEach(form => {
         const option = document.createElement('option');
-        option.value = form.ref;
-        option.textContent = form.ref;
-        if (form.ref === selectedRef) {
+        option.value = form.keybored_name;
+        option.textContent = form.keybored_name;
+        if (form.keybored_name === selectedRef) {
           option.selected = true;
         }
         selectElement.appendChild(option);
@@ -302,7 +424,27 @@
       }
       selectedFormIndex = null;
       addCurrentFormToData();
-      const jsonOutput = JSON.stringify(formData, null, 2);
+      const convertedData = { 
+      "main_menu": {
+        "keyboard": [
+        ]
+      },
+      keyboards: {} 
+    };
+
+      formData.forEach(item => {
+        if (item.keybored_name == "main_menu"){
+          delete item;
+          convertedData.main_menu = item;
+        }
+        if (item.hasOwnProperty('keybored_name') && item.keybored_name != "main_menu") {
+          const ref = item.keybored_name;
+          //delete item.ref;
+          convertedData.keyboards[ref] = item;
+        }
+      });
+      console.log(convertedData)
+      const jsonOutput = JSON.stringify(convertedData, null, 2);
       const blob = new Blob([jsonOutput], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -316,11 +458,11 @@
       const typeInput = document.getElementById('type-input').value.trim();
       const refInput = document.getElementById('ref-input').value.trim();
       const textInput = document.getElementById('text-input').value.trim();
-
+      console.log("addCurrentFormToData",formData)
       if (typeInput && refInput && textInput && keyboard.length > 0) {
         formData.push({
           type: typeInput,
-          ref: refInput,
+          keybored_name: refInput,
           text: textInput,
           keyboard: [...keyboard]
         });
@@ -334,11 +476,11 @@
       const typeInput = document.getElementById('type-input').value.trim();
       const refInput = document.getElementById('ref-input').value.trim();
       const textInput = document.getElementById('text-input').value.trim();
-
+      console.log("updateForm",formData[index])
       if (typeInput && refInput && textInput && keyboard.length > 0) {
         formData[index] = {
           type: typeInput,
-          ref: refInput,
+          keybored_name: refInput,
           text: textInput,
           keyboard: [...keyboard]
         };
@@ -352,7 +494,7 @@
       selectedFormIndex = index;
       const form = formData[index];
       document.getElementById('type-input').value = form.type;
-      document.getElementById('ref-input').value = form.ref;
+      document.getElementById('ref-input').value = form.keybored_name;
       document.getElementById('text-input').value = form.text;
       keyboard = form.keyboard;
       renderButtons();
@@ -430,7 +572,7 @@
 
       formData.forEach((form, index) => {
         const listItem = document.createElement('li');
-        listItem.innerHTML = `فرم ${index + 1}: ${form.ref}`;
+        listItem.innerHTML = `فرم ${index + 1}: ${form.keybored_name}`;
         const newRow = document.createElement('div');
         formList.appendChild(newRow);
         const editButton = document.createElement('button');
@@ -487,9 +629,9 @@
 
     function checkDuplicateRef(inputValue) {
 
-      const isDuplicate = formData.some(item => item.ref === inputValue);
+      const isDuplicate = formData.some(item => item.keybored_name === inputValue);
       if (isDuplicate) {
-        alert("این مقدار ref قبلا وارد شده است.");
+        alert("این مقدار نام کیبورد قبلا وارد شده است.");
         document.getElementById('ref-input').value = '';
       }
     }
