@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fa">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,26 +8,30 @@
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 </head>
+
 <body>
 
   <div class="container">
-    <div id="input-container"> 
+    <div id="input-container">
       <label for="type-input">نوع کیبورد:</label>
       <select id="type-input">
         <option value="inline">شیشه‌ای</option>
         <option value="regular">معمولی</option>
       </select>
       <label for="ref-input">رجوع:</label>
-      <input type="text" id="ref-input" placeholder="نام دکمه را وارد کنید" maxlength="30" value="main_menu" onkeydown="checkEnter(event)" oninput="validateInput(this, 'errorMsg')" disabled>
+      <input type="text" id="ref-input" placeholder="نامی منحصر به فرد برای این کیبورد انتخاب کنید:" maxlength="30"
+        value="main_menu" onkeydown="checkEnter(event)" oninput="validateInput(this, 'errorMsg')" disabled>
       <p id="errorMsg" style="color: red; display: none;">کاراکترهای نامعتبر شناسایی شدند!</p>
-      <label for="text-input">تکست:</label>
-      <textarea id="text-input" placeholder="به منوی اصلی ربات خوش اومدید"></textarea>
+      <label for="text-input">متن پیام:</label>
+      <textarea id="text-input" placeholder="متنی که میخواهید در بالای کیبورد به کاربر نمایش دهد را وارد کنید">♻️ منوی اصلی ربات:
+🤖 چه کاری میتونم براتون انجام بدم؟👇</textarea>
       <div class="dashed-line"></div>
-      <label for="button-name-input">نام دکمه:</label>
+      <label for="button-name-input">اضافه کردن دکمه:</label>
       <div class="input-container plus-icon">
         <button id="add-button">+</button>
         <input type="text" id="button-name-input" placeholder="نام دکمه را وارد کنید" onkeydown="checkEnter(event)">
       </div>
+      <span>برای تغییر چینش دکمه‌ها از موس استفاده کنید</span>
 
       <input type="text" id="button-action-input" placeholder="مقدار action را وارد کنید">
     </div>
@@ -34,7 +39,7 @@
     <div id="buttons-container"></div>
 
     <button id="add-form-button">افزودن فرم جدید</button>
-    
+
     <div id="form-list-container">
       <h3>لیست کیبورد ها</h3>
       <ul id="form-list"></ul>
@@ -109,7 +114,7 @@
       //console.log("buttonNameInput:",buttonNameInput)
       title.innerHTML = buttonNameInput;
       newButton.dataset.action = buttonActionInput;
-      
+
       const deleteIcon = document.createElement('span');
       deleteIcon.classList.add('delete-icon');
       deleteIcon.innerHTML = '&times;';
@@ -124,7 +129,7 @@
         action: buttonActionInput
       });
 
-      newButton.addEventListener('click', function() {
+      newButton.addEventListener('click', function () {
         selectedButton = newButton;
         //console.log(selectedButton);
         //console.log("selectedButton:",selectedButton)
@@ -132,7 +137,7 @@
         isEditing = true;
       });
 
-      deleteIcon.addEventListener('click', function(event) {
+      deleteIcon.addEventListener('click', function (event) {
         event.stopPropagation();
         removeButton(newButton);
       });
@@ -150,110 +155,113 @@
       const buttonRef = button.getAttribute('data-ref') || '';
 
       //console.log("buttonRef:",buttonRef);
-  
+
       Swal.fire({
-          title: 'ویرایش',
-          html:
-            `<div style="direction: rtl;">
+        title: 'ویرایش',
+        html:
+          `<div style="direction: rtl;">
               <div style="text-align: right; padding-right: 30px;">نام دکمه:</div>
               <input id="swal-input1" class="swal2-input" value="${buttonName.textContent}" placeholder="نام دکمه">
               <div style="text-align: right; padding-right: 30px;">نام اکشن:</div>
               <select id="swal-input2" class="swal2-input">
                 <option value="${buttonAction}">${buttonAction}</option>
-                <option value="purchase">purchase</option>
-                <option value="proxies">proxies</option>
-                <option value="referral">referral</option>
-                <option value="support">support</option>
-                <option value="help">help</option>
+                <option value="text">text</option>
+                <option value="ref_text">ref_text</option>
                 <option value="keyboard">keyboard</option>
+                <option value="purchase">purchase</option>
+                <option value="account">account</option>
+                <option value="charge">charge</option>
+                <option value="referral">referral</option>
+                <option value="proxies">proxies</option>
+                <option value="test_services">test_services</option>
               </select>
             </div>
             <div id="swal-ref-container" style="display: none;  direction: rtl;">
                 <div style="text-align: right; padding-right: 30px;">انتخاب رجوع</div>
                 <select id="swal-input3" class="swal2-input"></select>
             </div>`,
-          focusConfirm: false,
-          showCancelButton: true,
-          cancelButtonText: 'بستن',
-          confirmButtonText: 'ذخیره',
-          preConfirm: () => {
-              const newName = document.getElementById('swal-input1').value;
-              const newAction = document.getElementById('swal-input2').value;
-              const newRef = newAction === 'keyboard' ? document.getElementById('swal-input3').value : '';
+        focusConfirm: false,
+        showCancelButton: true,
+        cancelButtonText: 'بستن',
+        confirmButtonText: 'ذخیره',
+        preConfirm: () => {
+          const newName = document.getElementById('swal-input1').value;
+          const newAction = document.getElementById('swal-input2').value;
+          const newRef = newAction === 'keyboard' ? document.getElementById('swal-input3').value : '';
 
-              if (!newName || !newAction) {
-                  Swal.showValidationMessage('هر دو فیلد الزامی است!');
-                  return false;
-              }
-  
-              return {
-                  name: newName,
-                  action: newAction,
-                  ref: newAction === 'keyboard' && newRef ? newRef : null
-              };
+          if (!newName || !newAction) {
+            Swal.showValidationMessage('هر دو فیلد الزامی است!');
+            return false;
           }
+
+          return {
+            name: newName,
+            action: newAction,
+            ref: newAction === 'keyboard' && newRef ? newRef : null
+          };
+        }
       }).then((result) => {
-          if (result.isConfirmed) {
-              const { name, action, ref } = result.value;
-  
-              button.querySelector('.title').textContent = name;
-              button.setAttribute('data-action', action);
-              button.setAttribute('data-ref', ref);
-              //console.log("button:",button);
-              const row = button.closest('.buttons-row');
-              //console.log("row:",row);
-              const buttonIndex = Array.from(row.children).indexOf(button);
-              const rowIndex = Array.from(buttonsContainer.children).indexOf(row);
-              //console.log(rowIndex);
-              keyboard[rowIndex][buttonIndex] = {
-                title: name,
-                action: action,
-                ...(ref && { ref: ref })
-            };
-              addNewButton()
-              
-          }
-      });
-        
-        document.getElementById('swal-input2').addEventListener('input', function () {
-          if (this.value === 'keyboard') {
-              document.getElementById('swal-ref-container').style.display = 'block';
-              populateRefOptions();
-          } else {
-              document.getElementById('swal-ref-container').style.display = 'none';
-          }
+        if (result.isConfirmed) {
+          const { name, action, ref } = result.value;
+
+          button.querySelector('.title').textContent = name;
+          button.setAttribute('data-action', action);
+          button.setAttribute('data-ref', ref);
+          //console.log("button:",button);
+          const row = button.closest('.buttons-row');
+          //console.log("row:",row);
+          const buttonIndex = Array.from(row.children).indexOf(button);
+          const rowIndex = Array.from(buttonsContainer.children).indexOf(row);
+          //console.log(rowIndex);
+          keyboard[rowIndex][buttonIndex] = {
+            title: name,
+            action: action,
+            ...(ref && { ref: ref })
+          };
+          addNewButton()
+
+        }
       });
 
-      
-      if (buttonAction === 'keyboard') {
+      document.getElementById('swal-input2').addEventListener('input', function () {
+        if (this.value === 'keyboard') {
           document.getElementById('swal-ref-container').style.display = 'block';
-          populateRefOptions(buttonRef);
+          populateRefOptions();
+        } else {
+          document.getElementById('swal-ref-container').style.display = 'none';
+        }
+      });
+
+
+      if (buttonAction === 'keyboard') {
+        document.getElementById('swal-ref-container').style.display = 'block';
+        populateRefOptions(buttonRef);
       }
-  }
-  
-  function populateRefOptions(selectedRef = '') {
-    const selectElement = document.getElementById('swal-input3');
-    selectElement.innerHTML = '';
-  
-    
-    formData.forEach(form => {
+    }
+
+    function populateRefOptions(selectedRef = '') {
+      const selectElement = document.getElementById('swal-input3');
+      selectElement.innerHTML = '';
+
+
+      formData.forEach(form => {
         const option = document.createElement('option');
         option.value = form.ref;
         option.textContent = form.ref;
         if (form.ref === selectedRef) {
-            option.selected = true;
+          option.selected = true;
         }
         selectElement.appendChild(option);
-    });
-  
-    
-    if (formData.length === 0) {
+      });
+
+
+      if (formData.length === 0) {
         const defaultOption = document.createElement('option');
         defaultOption.value = '';
         defaultOption.textContent = 'هیچ ref‌ای موجود نیست';
         selectElement.appendChild(defaultOption);
+      }
     }
-  }
 
     document.getElementById('add-button').addEventListener('click', addNewButton);
 
@@ -261,21 +269,21 @@
       const row = button.closest('.buttons-row');
       const buttonIndex = Array.from(row.children).indexOf(button);
       const rowIndex = Array.from(buttonsContainer.children).indexOf(row);
-    
+
       row.removeChild(button);
       keyboard[rowIndex].splice(buttonIndex, 1);
       currentButtonCount--;
-    
+
       if (!row.children.length) {
         buttonsContainer.removeChild(row);
         keyboard.splice(rowIndex, 1);
       }
-    
+
       selectedButton = null;
       isEditing = false;
     }
 
-    document.getElementById('add-form-button').addEventListener('click', function() {
+    document.getElementById('add-form-button').addEventListener('click', function () {
       document.getElementById('ref-input').disabled = false;
       if (selectedFormIndex !== null) {
         updateForm(selectedFormIndex);
@@ -285,7 +293,7 @@
       selectedFormIndex = null;
     });
 
-    document.getElementById('download-button').addEventListener('click', function() {
+    document.getElementById('download-button').addEventListener('click', function () {
       document.getElementById('ref-input').disabled = false;
       if (selectedFormIndex !== null) {
         updateForm(selectedFormIndex);
@@ -357,18 +365,18 @@
       }
       formData.splice(index, 1);
       renderFormList();
-      
+
     }
 
     function renderButtons() {
       buttonsContainer.innerHTML = '';
       currentButtonCount = 0;
-      
+
       keyboard.forEach((row, rowIndex) => {
         const newRow = document.createElement('div');
         newRow.classList.add('buttons-row');
         buttonsContainer.appendChild(newRow);
-        
+
         row.forEach(button => {
           const newButton = document.createElement('div');
           newButton.classList.add('button', 'glass-button');
@@ -388,14 +396,14 @@
           newRow.appendChild(newButton);
           currentButtonCount++;
 
-          newButton.addEventListener('click', function() {
+          newButton.addEventListener('click', function () {
             selectedButton = newButton;
             //console.log("selectedButton2:",selectedButton)
             editNameAction(this);
             isEditing = true;
           });
-    
-          deleteIcon.addEventListener('click', function(event) {
+
+          deleteIcon.addEventListener('click', function (event) {
             event.stopPropagation();
             removeButton(newButton);
           });
@@ -427,7 +435,7 @@
         formList.appendChild(newRow);
         const editButton = document.createElement('button');
         editButton.innerHTML = 'ویرایش';
-        editButton.addEventListener('click', function() {
+        editButton.addEventListener('click', function () {
           editForm(index);
         });
 
@@ -440,7 +448,7 @@
         deleteButton.style.cursor = 'pointer';
         deleteButton.style.transition = 'background-color 0.3s';
         deleteButton.innerHTML = 'حذف';
-        deleteButton.addEventListener('click', function() {
+        deleteButton.addEventListener('click', function () {
           deleteForm(index);
         });
 
@@ -454,7 +462,7 @@
     function activateDragAndDrop() {
       $('.buttons-row').sortable({
         connectWith: '.buttons-row',
-        stop: function(event, ui) {
+        stop: function (event, ui) {
           const rows = Array.from(buttonsContainer.children);
           keyboard = rows.map(row =>
             Array.from(row.children).map(button => ({
@@ -463,7 +471,7 @@
             }))
           );
         },
-        receive: function(event, ui) {
+        receive: function (event, ui) {
           if ($(this).children('.button').length > maxButtonsPerRow) {
             $(ui.sender).sortable('cancel');
             alert('در این ردیف نمی‌توانید بیشتر از ۳ دکمه داشته باشید.');
@@ -471,22 +479,22 @@
           if (!$(ui.sender).children().length) {
             const rowIndex = $(ui.sender).index();
             $(ui.sender).remove();
-            keyboard.splice(rowIndex, 1); 
+            keyboard.splice(rowIndex, 1);
           }
         }
       });
     }
-    
+
     function checkDuplicateRef(inputValue) {
 
       const isDuplicate = formData.some(item => item.ref === inputValue);
       if (isDuplicate) {
-          alert("این مقدار ref قبلا وارد شده است.");
-          document.getElementById('ref-input').value = '';
+        alert("این مقدار ref قبلا وارد شده است.");
+        document.getElementById('ref-input').value = '';
       }
     }
 
-    document.getElementById('ref-input').addEventListener('input', function() {
+    document.getElementById('ref-input').addEventListener('input', function () {
       checkDuplicateRef(this.value);
     });
 
@@ -495,23 +503,24 @@
       const errorMsg = document.getElementById(errorMsgId);
 
       if (allowedChars.test(input.value)) {
-          errorMsg.style.display = 'none';
+        errorMsg.style.display = 'none';
       } else {
-          errorMsg.style.display = 'block';
-          input.value = input.value.replace(/[^A-Za-z0-9_]/g, '');
+        errorMsg.style.display = 'block';
+        input.value = input.value.replace(/[^A-Za-z0-9_]/g, '');
       }
-  }
+    }
 
-  function checkEnter(event) {
-    if (event.key === 'Enter') {
+    function checkEnter(event) {
+      if (event.key === 'Enter') {
         event.preventDefault();
         addNewButton()
+      }
     }
-  }
 
     activateDragAndDrop();
 
   </script>
 
 </body>
+
 </html>
