@@ -119,6 +119,7 @@
       title.classList.add('title');
       title.innerHTML = buttonNameInput;
       newButton.dataset.action = buttonActionInput;
+      newButton.dataset.ref = buttonRefInput;
 
       const deleteIcon = document.createElement('span');
       deleteIcon.classList.add('delete-icon');
@@ -194,6 +195,7 @@
       title.classList.add('title');
       title.innerHTML = buttonNameInput;
       newButton.dataset.action = buttonActionInput;
+      
 
       const deleteIcon = document.createElement('span');
       deleteIcon.classList.add('delete-icon');
@@ -247,9 +249,8 @@
     function editNameAction(button) {
       const buttonName = button.querySelector('.title');
       const buttonAction = button.getAttribute('data-action');
-      const buttonRef = button.getAttribute('data-ref') || '';
+      const buttonRef = button.getAttribute('data-ref') || 'انتخاب نشده';
       const buttontext = button.getAttribute('data-text') || '';
-
       Swal.fire({
         title: 'ویرایش',
         html:
@@ -271,7 +272,8 @@
             </div>
             <div id="swal-ref-container" style="display: none;  direction: rtl;">
                 <div style="text-align: right; padding-right: 30px;">انتخاب رجوع</div>
-                <select id="swal-input3" class="swal2-input"></select>
+                <select id="swal-input3" class="swal2-input">
+                </select>
             </div>
             <div id="swal-text-container" style="display: none;  direction: rtl;">
                 <div style="text-align: right; padding-right: 30px;">متن پیام:</div>
@@ -279,7 +281,11 @@
             </div>
             <div id="swal-ref-text-container" style="display: none;  direction: rtl;">
                 <div style="text-align: right; padding-right: 30px;">انتخاب متن رجوع</div>
-                <select id="swal-input5" class="swal2-input"></select>
+                <select id="swal-input5" class="swal2-input">
+                  <option value="${buttonRef}">${buttonRef}</option>
+                  <option value="help">help</option>
+                  <option value="support">support</option>
+                </select>
             </div>`,
         focusConfirm: false,
         showCancelButton: true,
@@ -290,6 +296,7 @@
           const newAction = document.getElementById('swal-input2').value;
           const newRef = newAction === 'keyboard' ? document.getElementById('swal-input3').value : '';
           const newtext = newAction === 'text' ? document.getElementById('swal-input4').value : '';
+          const newRefText = newAction === 'ref_text' ? document.getElementById('swal-input5').value : '';
 
           if (!newName || !newAction) {
             Swal.showValidationMessage('هر دو فیلد الزامی است!');
@@ -299,7 +306,7 @@
           return {
             name: newName,
             action: newAction,
-            ref: newAction === 'keyboard' && newRef ? newRef : null,
+            ref: newAction === 'keyboard' && newRef ? newRef : newAction === 'ref_text' && newRefText ? newRefText : null,
             text: newAction === 'text' && newtext ? newtext : null
           };
         }
@@ -350,6 +357,11 @@
       if (buttonAction === 'keyboard') {
         document.getElementById('swal-ref-container').style.display = 'block';
         populateRefOptions(buttonRef);
+      }else if (buttonAction === 'text'){
+        document.getElementById('swal-text-container').style.display = 'block'; 
+      }else if (buttonAction === 'ref_text'){
+        document.getElementById('swal-ref-text-container').style.display = 'block';
+
       }
     }
 
@@ -466,7 +478,7 @@
       const typeInput = document.getElementById('type-input').value.trim();
       const refInput = document.getElementById('ref-input').value.trim();
       const textInput = document.getElementById('text-input').value.trim();
-      //("updateForm",formData[index])
+      document.getElementById('add-form-button').innerHTML = 'افزودن کیبورد جدید';
       if (typeInput && refInput && textInput && keyboard.length > 0) {
         formData[index] = {
           type: typeInput,
@@ -486,6 +498,7 @@
       document.getElementById('type-input').value = form.type;
       document.getElementById('ref-input').value = form.keybored_name;
       document.getElementById('text-input').value = form.text;
+      document.getElementById('add-form-button').innerHTML = 'ذخیره کردن فرم';
       keyboard = form.keyboard;
       renderButtons();
     }
@@ -516,6 +529,8 @@
           title.classList.add('title');
           title.innerHTML = button.title;
           newButton.dataset.action = button.action;
+          newButton.dataset.ref = button.ref;
+          newButton.dataset.text = button.text;
 
           const deleteIcon = document.createElement('span');
           deleteIcon.classList.add('delete-icon');
