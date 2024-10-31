@@ -20,7 +20,7 @@ body {
 }
 
 .container {
-  width: 380px;
+  width: 450px;
   background-color: #fff;
   padding: 20px;
   border-radius: 10px;
@@ -35,7 +35,7 @@ body {
   position: relative;
   display: flex;
   align-items: center;
-  width: 320px;
+  width: 390px;
   background-color: #fff;
   overflow: hidden;
   margin-bottom: 15px;
@@ -103,7 +103,7 @@ body {
 
 select {
   margin-top: 5px;
-  width: 380px;
+  width: 450px;
   padding: 10px;
   border-radius: 6px;
   border: 1px solid #ddd;
@@ -117,7 +117,7 @@ select {
 #text-input,
 #ref-input {
   margin-top: 5px;
-  width: 360px;
+  width: 430px;
   padding: 10px;
   border-radius: 6px;
   border: 1px solid #ddd;
@@ -126,9 +126,9 @@ select {
 }
 
 textarea {
-  width: 360px;
-  max-width: 360px;
-  min-width: 360px;
+  width: 430px;
+  max-width: 430px;
+  min-width: 430px;
   min-height: 50px;
   max-height: 180px;
 }
@@ -139,7 +139,7 @@ textarea {
 
 .buttons-row {
   display: flex;
-  width: 390px;
+  width: 460px;
   justify-content: space-between;
   margin-bottom: 10px;
   padding: 5px;

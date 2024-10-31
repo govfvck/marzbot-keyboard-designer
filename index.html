@@ -254,7 +254,9 @@
       //console.log("buttonName:",buttonName);
       const buttonAction = button.getAttribute('data-action');
       const buttonRef = button.getAttribute('data-ref') || '';
-
+      const buttontext = button.getAttribute('data-text') || '';
+      //console.log("buttonAction:",buttonAction);
+      //console.log("buttontext:",buttontext);
       //console.log("buttonRef:",buttonRef);
 
       Swal.fire({
@@ -283,11 +285,11 @@
             </div>
             <div id="swal-text-container" style="display: none;  direction: rtl;">
                 <div style="text-align: right; padding-right: 30px;">متن پیام:</div>
-              <input id="swal-input3" class="swal2-input">
+              <input id="swal-input4" class="swal2-input" value="${buttontext}">
             </div>
             <div id="swal-ref-text-container" style="display: none;  direction: rtl;">
                 <div style="text-align: right; padding-right: 30px;">انتخاب متن رجوع</div>
-                <select id="swal-input4" class="swal2-input"></select>
+                <select id="swal-input5" class="swal2-input"></select>
             </div>`,
         focusConfirm: false,
         showCancelButton: true,
@@ -297,6 +299,7 @@
           const newName = document.getElementById('swal-input1').value;
           const newAction = document.getElementById('swal-input2').value;
           const newRef = newAction === 'keyboard' ? document.getElementById('swal-input3').value : '';
+          const newtext = newAction === 'text' ? document.getElementById('swal-input4').value : '';
 
           if (!newName || !newAction) {
             Swal.showValidationMessage('هر دو فیلد الزامی است!');
@@ -306,16 +309,18 @@
           return {
             name: newName,
             action: newAction,
-            ref: newAction === 'keyboard' && newRef ? newRef : null
+            ref: newAction === 'keyboard' && newRef ? newRef : null,
+            text: newAction === 'text' && newtext ? newtext : null
           };
         }
       }).then((result) => {
         if (result.isConfirmed) {
-          const { name, action, ref } = result.value;
+          const { name, action, ref, text } = result.value;
 
           button.querySelector('.title').textContent = name;
           button.setAttribute('data-action', action);
           button.setAttribute('data-ref', ref);
+          button.setAttribute('data-text', text);
           //console.log("button:",button);
           const row = button.closest('.buttons-row');
           //console.log("row:",row);
@@ -325,7 +330,8 @@
           keyboard[rowIndex][buttonIndex] = {
             title: name,
             action: action,
-            ...(ref && { ref: ref })
+            ...(ref && { ref: ref }),
+            ...(text && { text: text })
           };
           addNewButton()
 
@@ -430,19 +436,18 @@
       },
       keyboards: {} 
     };
-
       formData.forEach(item => {
         if (item.keybored_name == "main_menu"){
-          delete item;
-          convertedData.main_menu = item;
+          convertedData.main_menu = JSON.parse(JSON.stringify(item));
+          delete convertedData.main_menu.keybored_name
         }
         if (item.hasOwnProperty('keybored_name') && item.keybored_name != "main_menu") {
           const ref = item.keybored_name;
-          //delete item.ref;
-          convertedData.keyboards[ref] = item;
+          convertedData.keyboards[ref] = JSON.parse(JSON.stringify(item));
+          delete convertedData.keyboards[ref].keybored_name
         }
       });
-      //console.log(convertedData)
+
       const jsonOutput = JSON.stringify(convertedData, null, 2);
       const blob = new Blob([jsonOutput], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
