@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>دکمه‌های شیشه‌ای داینامیک با خروجی JSON</title>
+  <title>Marzbot Menu designer</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 </head>
@@ -38,7 +38,7 @@
 
     <div id="buttons-container"></div>
 
-    <button id="add-form-button">افزودن فرم جدید</button>
+    <button id="add-form-button">افزودن کیبورد جدید</button>
 
     <div id="form-list-container">
       <h3>لیست کیبورد ها</h3>
@@ -55,7 +55,7 @@
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="https://code.jquery.com/ui/1.14.0/jquery-ui.min.js"></script>
   <script>
-  
+
     const defualt = {
       "main_menu": {
         "type": "inline",
@@ -80,9 +80,9 @@
         ]
       }
     };
-  
+
     let maxButtonsPerRow = 3;
-    let maxRows = 5;
+    let maxRows = 20;
     let currentButtonCount = 0;
     let selectedButton = null;
     let isEditing = false;
@@ -91,37 +91,39 @@
     let selectedFormIndex = null;
 
     const buttonsContainer = document.getElementById('buttons-container');
-    function addNewButtonn(buttonNameInput, buttonActionInput, buttonRefInput) {
+    function addNewButtonn(buttonNameInput, buttonActionInput, buttonRefInput, rowNumber) {
       buttonActionInput = buttonActionInput || "text";
-  
+
       const rows = buttonsContainer.querySelectorAll('.buttons-row');
       let currentRow;
-      
-      if (!rows.length || rows[rows.length - 1].children.length >= maxButtonsPerRow) {
-          if (rows.length < maxRows) {
-              currentRow = document.createElement('div');
-              currentRow.classList.add('buttons-row');
-              buttonsContainer.appendChild(currentRow);
-              keyboard.push([]);
-          } else {
-              alert('حداکثر تعداد ردیف‌ها ساخته شده است.');
-              return;
-          }
+
+      if (!rows.length || (rows[rows.length - 1].children.length >= maxButtonsPerRow) || (rows.length - 1) < rowNumber) {
+        if (rows.length < maxRows) {
+          currentRow = document.createElement('div');
+          currentRow.classList.add('buttons-row');
+          buttonsContainer.appendChild(currentRow);
+          keyboard.push([]);
+        } else {
+          alert('حداکثر تعداد ردیف‌ها ساخته شده است.');
+          return;
+        }
+      } else if (rows.length >= rowNumber) {
+        currentRow = rows[rowNumber];
       } else {
-          currentRow = rows[rows.length - 1];
+        currentRow = rows[rows.length - 1];
       }
-  
+
       const newButton = document.createElement('div');
       newButton.classList.add('button', 'glass-button');
       const title = document.createElement('div');
       title.classList.add('title');
       title.innerHTML = buttonNameInput;
       newButton.dataset.action = buttonActionInput;
-  
+
       const deleteIcon = document.createElement('span');
       deleteIcon.classList.add('delete-icon');
       deleteIcon.innerHTML = '&times;';
-  
+
       newButton.appendChild(deleteIcon);
       newButton.appendChild(title);
       currentRow.appendChild(newButton);
@@ -130,36 +132,34 @@
       keyboard[keyboard.length - 1].push({
         title: buttonNameInput,
         action: buttonActionInput,
-        ref : buttonRefInput
+        ref: buttonRefInput
       });
 
       newButton.addEventListener('click', function () {
-          selectedButton = newButton;
-          editNameAction(this);
-          isEditing = true;
+        selectedButton = newButton;
+        editNameAction(this);
+        isEditing = true;
       });
-  
+
       deleteIcon.addEventListener('click', function (event) {
-          event.stopPropagation();
-          removeButton(newButton);
+        event.stopPropagation();
+        removeButton(newButton);
       });
 
       document.getElementById('button-name-input').value = '';
       document.getElementById('button-action-input').value = '';
       activateDragAndDrop();
-  }
-  
+    }
+
     function addNewButton() {
       const buttonNameInput = document.getElementById('button-name-input').value.trim();
       const buttonActionInput = document.getElementById('button-action-input').value.trim() || "text";
 
-      //console.log("test")
       if (isEditing && selectedButton) {
         selectedButton = null;
         isEditing = false;
         document.getElementById('button-name-input').value = '';
         document.getElementById('button-action-input').value = '';
-        //console.log("Edit")
         return;
       }
       if (!buttonNameInput) {
@@ -178,7 +178,6 @@
         if (rows.length < maxRows) {
           currentRow = document.createElement('div');
           currentRow.classList.add('buttons-row');
-          //console.log("new", currentRow)
           buttonsContainer.appendChild(currentRow);
           keyboard.push([]);
         } else {
@@ -193,7 +192,6 @@
       newButton.classList.add('button', 'glass-button');
       const title = document.createElement('div');
       title.classList.add('title');
-      //console.log("buttonNameInput:",buttonNameInput)
       title.innerHTML = buttonNameInput;
       newButton.dataset.action = buttonActionInput;
 
@@ -214,8 +212,6 @@
 
       newButton.addEventListener('click', function () {
         selectedButton = newButton;
-        //console.log(selectedButton);
-        //console.log("selectedButton:",selectedButton)
         editNameAction(this);
         isEditing = true;
       });
@@ -231,34 +227,28 @@
     }
 
     function displayForm(data) {
-      //console.log("test")
-
       document.getElementById('type-input').value = data.main_menu.type;
       document.getElementById('ref-input').value = data.main_menu.ref;
       document.getElementById('text-input').value = data.main_menu.text;
 
+      let index = 0;
       data.main_menu.keyboard.forEach(row => {
-        //console.log("row",row)
         row.forEach(button => {
-          addNewButtonn(button.title, button.action, button.ref);
-  
+          addNewButtonn(button.title, button.action, button.ref, index);
+
         });
+        index++;
       });
-    
+
     }
-  
+
     displayForm(defualt);
 
     function editNameAction(button) {
-      //console.log("editNameAction:",button);
       const buttonName = button.querySelector('.title');
-      //console.log("buttonName:",buttonName);
       const buttonAction = button.getAttribute('data-action');
       const buttonRef = button.getAttribute('data-ref') || '';
       const buttontext = button.getAttribute('data-text') || '';
-      //console.log("buttonAction:",buttonAction);
-      //console.log("buttontext:",buttontext);
-      //console.log("buttonRef:",buttonRef);
 
       Swal.fire({
         title: 'ویرایش',
@@ -322,12 +312,9 @@
           button.setAttribute('data-action', action);
           button.setAttribute('data-ref', ref);
           button.setAttribute('data-text', text);
-          //console.log("button:",button);
           const row = button.closest('.buttons-row');
-          //console.log("row:",row);
           const buttonIndex = Array.from(row.children).indexOf(button);
           const rowIndex = Array.from(buttonsContainer.children).indexOf(row);
-          //console.log(rowIndex);
           keyboard[rowIndex][buttonIndex] = {
             title: name,
             action: action,
@@ -345,11 +332,11 @@
           document.getElementById('swal-text-container').style.display = 'none';
           document.getElementById('swal-ref-text-container').style.display = 'none';
           populateRefOptions();
-        } else if (this.value === 'text'){
+        } else if (this.value === 'text') {
           document.getElementById('swal-text-container').style.display = 'block';
           document.getElementById('swal-ref-container').style.display = 'none';
           document.getElementById('swal-ref-text-container').style.display = 'none';
-        } else if (this.value === 'ref_text'){
+        } else if (this.value === 'ref_text') {
           document.getElementById('swal-ref-text-container').style.display = 'block';
           document.getElementById('swal-ref-container').style.display = 'none';
           document.getElementById('swal-text-container').style.display = 'none';
@@ -430,15 +417,15 @@
       }
       selectedFormIndex = null;
       addCurrentFormToData();
-      const convertedData = { 
-      "main_menu": {
-        "keyboard": [
-        ]
-      },
-      keyboards: {} 
-    };
+      const convertedData = {
+        "main_menu": {
+          "keyboard": [
+          ]
+        },
+        keyboards: {}
+      };
       formData.forEach(item => {
-        if (item.keybored_name == "main_menu"){
+        if (item.keybored_name == "main_menu") {
           convertedData.main_menu = JSON.parse(JSON.stringify(item));
           delete convertedData.main_menu.keybored_name
         }
@@ -463,7 +450,6 @@
       const typeInput = document.getElementById('type-input').value.trim();
       const refInput = document.getElementById('ref-input').value.trim();
       const textInput = document.getElementById('text-input').value.trim();
-      //console.log("addCurrentFormToData",formData)
       if (typeInput && refInput && textInput && keyboard.length > 0) {
         formData.push({
           type: typeInput,
@@ -529,7 +515,6 @@
           newButton.classList.add('button', 'glass-button');
           const title = document.createElement('div');
           title.classList.add('title');
-          //console.log("button.title:",button.title);
           title.innerHTML = button.title;
           newButton.dataset.action = button.action;
 
@@ -545,7 +530,6 @@
 
           newButton.addEventListener('click', function () {
             selectedButton = newButton;
-            //console.log("selectedButton2:",selectedButton)
             editNameAction(this);
             isEditing = true;
           });
