@@ -195,7 +195,7 @@
       title.classList.add('title');
       title.innerHTML = buttonNameInput;
       newButton.dataset.action = buttonActionInput;
-      
+
 
       const deleteIcon = document.createElement('span');
       deleteIcon.classList.add('delete-icon');
@@ -268,6 +268,7 @@
                 <option value="charge">charge</option>
                 <option value="referral">referral</option>
                 <option value="proxies">proxies</option>
+                <option value="close">close</option>
               </select>
             </div>
             <div id="swal-ref-container" style="display: none;  direction: rtl;">
@@ -285,6 +286,7 @@
                   <option value="${buttonRef}">${buttonRef}</option>
                   <option value="help">help</option>
                   <option value="support">support</option>
+                  <option value="packages">packages</option>
                 </select>
             </div>`,
         focusConfirm: false,
@@ -357,9 +359,9 @@
       if (buttonAction === 'keyboard') {
         document.getElementById('swal-ref-container').style.display = 'block';
         populateRefOptions(buttonRef);
-      }else if (buttonAction === 'text'){
-        document.getElementById('swal-text-container').style.display = 'block'; 
-      }else if (buttonAction === 'ref_text'){
+      } else if (buttonAction === 'text') {
+        document.getElementById('swal-text-container').style.display = 'block';
+      } else if (buttonAction === 'ref_text') {
         document.getElementById('swal-ref-text-container').style.display = 'block';
 
       }
